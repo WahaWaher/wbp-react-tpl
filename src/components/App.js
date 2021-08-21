@@ -1,6 +1,6 @@
 import React from 'react';
-import Text from '@/components/Text';
 import reactLogoSrc from '@/img/react-logo.png';
+import styles from './App.module.scss';
 
 const App = () => {
   const [{ title, content }, setState] = React.useState({
@@ -9,17 +9,21 @@ const App = () => {
   });
 
   const changeState = () => {
-    setState((s) => ({ ...s, content: s.content + '.' }));
+    setState((s) => ({ ...s, content: `${s.content}.` }));
   };
 
   return (
     <div className="container">
-      <h4 className="d-flex align-items-center my-2">
+      <h4 className={styles.title}>
         <img className="logo me-1" src={reactLogoSrc} alt="logo" />
-        <Text>{title}</Text>
-        <Text>{content}</Text>
+        <span>{title}</span>
+        <span>{content}</span>
       </h4>
-      <button className="btn btn-primary btn-sm" onClick={changeState}>
+      <button
+        type="button"
+        className="btn btn-primary btn-sm"
+        onClick={changeState}
+      >
         Change State
       </button>
     </div>

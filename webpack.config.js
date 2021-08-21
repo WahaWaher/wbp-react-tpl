@@ -16,10 +16,10 @@ module.exports = {
     app: paths.appEntry,
   },
   output: {
-    filename: isDev ? '[name].js' : `js/[name].[contenthash:6].js`,
+    filename: isDev ? '[name].js' : 'js/[name].[contenthash:6].js',
     path: paths.appBuild,
     clean: isProd,
-    assetModuleFilename: '[name][ext][query]',
+    assetModuleFilename: '[name][ext]',
   },
   devServer: {
     port: 3000,
@@ -30,7 +30,14 @@ module.exports = {
   },
   optimization: {
     minimize: isProd,
-    minimizer: [new TerserPlugin(), new CssMinimizerPlugin()],
+    minimizer: [
+      new TerserPlugin(),
+      new CssMinimizerPlugin({
+        minimizerOptions: {
+          preset: ['default', { discardComments: { removeAll: true } }],
+        },
+      }),
+    ],
   },
   resolve: {
     alias: {
@@ -53,7 +60,8 @@ module.exports = {
         ],
       },
       {
-        test: /\.s?css$/i,
+        test: /\.(css|scss)$/i,
+        exclude: /\.module\.scss$/,
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader',
@@ -66,8 +74,30 @@ module.exports = {
         ].filter(Boolean),
       },
       {
+        test: /\.module\.scss$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+              esModule: true,
+              modules: {
+                localIdentName: '[name]__[local]--[hash:base64:5]',
+              },
+            },
+          },
+          isProd && 'postcss-loader',
+          'resolve-url-loader',
+          {
+            loader: 'sass-loader',
+            options: { sourceMap: true },
+          },
+        ].filter(Boolean),
+      },
+      {
         test: /\.(png|svg|jpe?g|gif|ico)$/i,
-        type: 'asset',
+        type: 'asset/resource',
         generator: {
           filename: 'img/[name].[contenthash:6][ext][query]',
         },
@@ -92,7 +122,7 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'css/[name].[contenthash:6].css',
+      filename: isDev ? '[name].css' : 'css/[name].[contenthash:6].css',
     }),
     new HtmlWebpackPlugin({
       template: paths.appHtml,

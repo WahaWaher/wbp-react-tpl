@@ -15,7 +15,7 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  plugins: ['jsx-a11y'],
+  plugins: ['jsx-a11y', 'only-warn'],
   rules: {
     'import/no-unresolved': 'off',
     'import/extensions': 'off',

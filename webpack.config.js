@@ -33,6 +33,7 @@ module.exports = {
     compress: true,
     open: false,
     watchFiles: ['src/**/*.html'],
+    historyApiFallback: true,
   },
   optimization: {
     minimize: isProd,
